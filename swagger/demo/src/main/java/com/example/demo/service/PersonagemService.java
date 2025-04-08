@@ -3,6 +3,7 @@ package com.example.demo.service;
 import com.example.demo.model.Classe;
 import com.example.demo.model.ItemMagico;
 import com.example.demo.model.Personagem;
+import com.example.demo.model.TipoArma;
 import com.example.demo.repository.PersonagemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,9 @@ public class PersonagemService {
 
     @Autowired
     private PersonagemRepository personagemRepository;
+
+    @Autowired
+    private ItemMagicoService itemMagicoService;
 
     //Achar um Personagem por ID
     public Optional<Personagem> acharPersonagemPorId(long id){
@@ -60,14 +64,28 @@ public class PersonagemService {
     public Personagem incluirItemMagicoNoPersonagem(long id, ItemMagico itemMagico){
         Personagem personagemAchado = acharPersonagemPorId(id).get();
 
+        ItemMagico itemMagicoExistente = itemMagicoService.acharItemMagicoPorId(itemMagico.getId());
+
         List <ItemMagico> itemMagicoList = personagemAchado.getItemMagicoList();
-        if(itemMagicoList.size() == 3){
+
+        int totalItens = itemMagicoList.size();
+        int i = 0;
+        boolean almuleto = false;
+
+        do {
+            if (itemMagicoList.get(i).getTipo() == TipoArma.AMULETO){
+                almuleto = true;
+            }
+            i++;
+        } while ((i < totalItens) || almuleto == false);
+
+        if (almuleto){
             return null;
-        } else {
-            itemMagicoList.add(itemMagico);
-            personagemAchado.setItemMagicoList(itemMagicoList);
-            return personagemRepository.save(personagemAchado);
         }
+
+        itemMagicoList.add(itemMagico);
+        personagemAchado.setItemMagicoList(itemMagicoList);
+        return personagemRepository.save(personagemAchado);
     }
 
     // Deletar um Personagem Por Id
