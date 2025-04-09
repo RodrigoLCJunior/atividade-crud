@@ -16,6 +16,8 @@ public class ItemMagico {
     private int forca;
     private int defesa;
 
+    public ItemMagico(){};
+
     public ItemMagico(String nome, TipoArma tipo, int forca, int defesa) {
         this.tipo = tipo;
         if (tipo == TipoArma.ARMA){

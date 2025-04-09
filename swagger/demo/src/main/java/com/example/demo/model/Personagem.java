@@ -22,6 +22,8 @@ public class Personagem {
     private List<ItemMagico> itemMagicoList = new ArrayList<>();
 
 
+    public Personagem(){};
+
     public Personagem(String nome, Classe classe) {
         this.nome = nome;
         this.level = 0;

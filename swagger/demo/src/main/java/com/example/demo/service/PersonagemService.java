@@ -100,10 +100,12 @@ public class PersonagemService {
 
         itemMagicoList.add(itemMagico);
         personagemAchado.setItemMagicoList(itemMagicoList);
+
+        personagemAchado.setForca(personagemAchado.getForca() + itemMagico.getForca());
+        personagemAchado.setDefesa(personagemAchado.getDefesa() + itemMagico.getDefesa());
         return personagemRepository.save(personagemAchado);
     }
 
-    // Remover Item Mágico do Personagem
     public Personagem removerItemMagicoDoPersonagem(long personagemId, long itemId) {
         Optional<Personagem> personagemOptional = personagemRepository.findById(personagemId);
 
@@ -111,11 +113,30 @@ public class PersonagemService {
             Personagem personagem = personagemOptional.get();
             List<ItemMagico> itens = personagem.getItemMagicoList();
 
-            // Remove o item com o ID correspondente
-            itens.removeIf(item -> item.getId() == itemId);
+            int i = 0;
+            int total = itens.size();
+            ItemMagico itemParaRemover = null;
 
-            personagem.setItemMagicoList(itens);
-            return personagemRepository.save(personagem);
+            if (total == 0) return null;
+
+            do {
+                ItemMagico item = itens.get(i);
+                if (item.getId().equals(itemId)) {
+                    itemParaRemover = item;
+                    break;
+                }
+                i++;
+            } while (i < total && itemParaRemover == null);
+
+            if (itemParaRemover != null) {
+
+                personagem.setForca(personagem.getForca() - itemParaRemover.getForca());
+                personagem.setDefesa(personagem.getDefesa() - itemParaRemover.getDefesa());
+
+                itens.remove(itemParaRemover);
+                personagem.setItemMagicoList(itens);
+                return personagemRepository.save(personagem);
+            }
         }
 
         return null;

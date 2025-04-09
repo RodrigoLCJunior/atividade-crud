@@ -25,6 +25,9 @@ public class ItemMagicoService {
 
     // Criar Um item Magico
     public ItemMagico criarItemMagico(ItemMagico itemMagico){
+        if ((itemMagico.getDefesa() == 0) && (itemMagico.getForca() == 0)){
+            return null;
+        }
         ItemMagico itemMagicoNovo = new ItemMagico(itemMagico.getNome(), itemMagico.getTipo(), itemMagico.getForca(), itemMagico.getDefesa());
         return itemMagicoRepository.save(itemMagicoNovo);
     }
