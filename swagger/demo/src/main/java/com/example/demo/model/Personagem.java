@@ -1,10 +1,8 @@
 package com.example.demo.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -20,7 +18,9 @@ public class Personagem {
     private int defesa;
     private int pontosAtributos;
     private Classe classe;
-    private List<ItemMagico> itemMagicoList;
+    @ManyToMany
+    private List<ItemMagico> itemMagicoList = new ArrayList<>();
+
 
     public Personagem(String nome, Classe classe) {
         this.nome = nome;
@@ -92,7 +92,7 @@ public class Personagem {
     }
 
     public List<ItemMagico> setItemMagicoList(List<ItemMagico> itemMagicoList) {
-        this.itemMagicoList = itemMagicoList;
+        return this.itemMagicoList = itemMagicoList;
     }
 
     public Classe getClasse() {

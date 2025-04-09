@@ -31,6 +31,21 @@ public class PersonagemService {
         return personagemRepository.findAll();
     }
 
+    // Buscar Amuleto do Personagess
+    public ItemMagico buscarAmuletoDoPersonagem(long id) {
+        Personagem personagem = acharPersonagemPorId(id).orElse(null);
+
+        if (personagem != null) {
+            for (ItemMagico item : personagem.getItemMagicoList()) {
+                if (item.getTipo().toString().equals("AMULETO")) {
+                    return item;
+                }
+            }
+        }
+
+        return null;
+    }
+
     //Criar um Personagem
     public Personagem criarPersonagem(String nome, Classe classe){
         Personagem personagemNovo = new Personagem(nome, classe);
@@ -86,6 +101,24 @@ public class PersonagemService {
         itemMagicoList.add(itemMagico);
         personagemAchado.setItemMagicoList(itemMagicoList);
         return personagemRepository.save(personagemAchado);
+    }
+
+    // Remover Item Mágico do Personagem
+    public Personagem removerItemMagicoDoPersonagem(long personagemId, long itemId) {
+        Optional<Personagem> personagemOptional = personagemRepository.findById(personagemId);
+
+        if (personagemOptional.isPresent()) {
+            Personagem personagem = personagemOptional.get();
+            List<ItemMagico> itens = personagem.getItemMagicoList();
+
+            // Remove o item com o ID correspondente
+            itens.removeIf(item -> item.getId() == itemId);
+
+            personagem.setItemMagicoList(itens);
+            return personagemRepository.save(personagem);
+        }
+
+        return null;
     }
 
     // Deletar um Personagem Por Id
