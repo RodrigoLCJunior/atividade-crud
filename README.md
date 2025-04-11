@@ -4,6 +4,18 @@ http://localhost:6060/swagger-ui/index.html#/ <- link do SWAGGER
 
 ### 🎮 Personagem
 
+{
+    "id": 1,
+    "nome": "Teste6",
+    "nomeAventureiro": null,
+    "level": 0,
+    "forca": 0,
+    "defesa": 0,
+    "pontosAtributos": 10,
+    "classe": "Guerreiro",
+    "itemMagicoList": []
+}
+
 - `POST /personagens` → Cadastrar personagem
 - `GET /personagens` → Listar personagens
 - `GET /personagens/{id}` → Buscar personagem por ID
@@ -17,6 +29,14 @@ http://localhost:6060/swagger-ui/index.html#/ <- link do SWAGGER
 ---
 
 ### 🪄 Item Mágico
+
+{
+    "id": 3,
+    "nome": "Armadura",
+    "tipo": "ARMADURA",
+    "forca": 0,
+    "defesa": 4
+}
 
 - `POST /itens-magicos` → Cadastrar item mágico
 - `GET /itens-magicos` → Listar itens mágicos
