@@ -47,25 +47,28 @@ public class PersonagemService {
     }
 
     //Criar um Personagem
-    public Personagem criarPersonagem(String nome, Classe classe){
-        Personagem personagemNovo = new Personagem(nome, classe);
+    public Personagem criarPersonagem(Personagem personagem){
+        Personagem personagemNovo = new Personagem(personagem.getNome(), personagem.getClasse());
+        personagemNovo = atribuirForcaEDefesa(personagemNovo);
         return personagemRepository.save(personagemNovo);
     }
 
     //Atribuir atributos
-    public void atribuirForcaEDefesa(long id, int forca, int defesa){
-        Personagem personagem = acharPersonagemPorId(id).get();
-        if ((personagem.getDefesa() + defesa) > 10) {
-            personagem.setDefesa(10);
-        }else {
-            personagem.setDefesa(defesa);
+    public Personagem atribuirForcaEDefesa(Personagem personagem){
+        if((personagem.getForca() + personagem.getDefesa()) > personagem.getPontosAtributos() ){
+            return null;
         }
 
-        if ((personagem.getForca() + forca) > 10){
-            personagem.setForca(10);
-        } else {
+        if ((personagem.getDefesa()) > 10) {
+            personagem.setDefesa(10);
+        }
+
+        if (personagem.getForca() > 10) {
             personagem.setForca(10);
         }
+
+        personagem.setPontosAtributos((personagem.getPontosAtributos() - personagem.getForca()) - personagem.getDefesa());
+        return personagem;
     }
 
     // Mudar o nome de um Personagem por Id
@@ -76,7 +79,7 @@ public class PersonagemService {
     }
 
     // Incluir um ItemMagico no Personagem
-    public Personagem incluirItemMagicoNoPersonagem(long id, ItemMagico itemMagico){
+    public Personagem incluirItemMagicoNoPersonagem(Long id, ItemMagico itemMagico){
         Personagem personagemAchado = acharPersonagemPorId(id).get();
 
         ItemMagico itemMagicoExistente = itemMagicoService.acharItemMagicoPorId(itemMagico.getId());
@@ -86,18 +89,18 @@ public class PersonagemService {
         int totalItens = itemMagicoList.size();
         int i = 0;
         boolean almuleto = false;
+        if(totalItens > 0) {
+            do {
+                if (itemMagicoList.get(i).getTipo() == TipoArma.AMULETO) {
+                    almuleto = true;
+                }
+                i++;
+            } while ((i < totalItens) || almuleto == false);
 
-        do {
-            if (itemMagicoList.get(i).getTipo() == TipoArma.AMULETO){
-                almuleto = true;
+            if (almuleto) {
+                return null;
             }
-            i++;
-        } while ((i < totalItens) || almuleto == false);
-
-        if (almuleto){
-            return null;
         }
-
         itemMagicoList.add(itemMagico);
         personagemAchado.setItemMagicoList(itemMagicoList);
 
@@ -106,7 +109,7 @@ public class PersonagemService {
         return personagemRepository.save(personagemAchado);
     }
 
-    public Personagem removerItemMagicoDoPersonagem(long personagemId, long itemId) {
+    public Personagem removerItemMagicoDoPersonagem(Long personagemId, Long itemId) {
         Optional<Personagem> personagemOptional = personagemRepository.findById(personagemId);
 
         if (personagemOptional.isPresent()) {
@@ -143,7 +146,7 @@ public class PersonagemService {
     }
 
     // Deletar um Personagem Por Id
-    public void deletarPersonagemPorId(long id){
+    public void deletarPersonagemPorId(Long id){
         personagemRepository.deleteById(id);
     }
 }

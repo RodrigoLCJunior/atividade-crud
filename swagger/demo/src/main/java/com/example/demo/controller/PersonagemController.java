@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.model.Classe;
 import com.example.demo.model.ItemMagico;
 import com.example.demo.model.Personagem;
+import com.example.demo.service.ItemMagicoService;
 import com.example.demo.service.PersonagemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,10 +18,13 @@ public class PersonagemController {
     @Autowired
     private PersonagemService personagemService;
 
+    @Autowired
+    private ItemMagicoService itemMagicoService;
+
     // Cadastrar Personagem
     @PostMapping
-    public Personagem criarPersonagem(@RequestParam String nome, @RequestParam Classe classe) {
-        return personagemService.criarPersonagem(nome, classe);
+    public Personagem criarPersonagem(@RequestBody Personagem personagem) {
+        return personagemService.criarPersonagem(personagem);
     }
 
     // Listar todos os personagens
@@ -41,8 +45,8 @@ public class PersonagemController {
 
     // Atualizar nome do personagem por ID
     @PutMapping("/{id}/nome")
-    public ResponseEntity<Personagem> atualizarNome(@PathVariable long id, @RequestParam String nomeNovo) {
-        Personagem atualizado = personagemService.mudarNomePorId(id, nomeNovo);
+    public ResponseEntity<Personagem> atualizarNome(@PathVariable long id, @RequestBody Personagem personagem) {
+        Personagem atualizado = personagemService.mudarNomePorId(id, personagem.getNome());
         return ResponseEntity.ok(atualizado);
     }
 
@@ -54,9 +58,13 @@ public class PersonagemController {
     }
 
     // Adicionar item mágico ao personagem
-    @PostMapping("/{id}/item-magico")
-    public ResponseEntity<Personagem> adicionarItem(@PathVariable long id, @RequestBody ItemMagico item) {
-        Personagem atualizado = personagemService.incluirItemMagicoNoPersonagem(id, item);
+    @PostMapping("/{id}/item-magico/{idIM}")
+    public ResponseEntity<Personagem> adicionarItem(@PathVariable Long id, @PathVariable Long idIM) {
+        ItemMagico itemMagico = itemMagicoService.acharItemMagicoPorId(idIM);
+        if (itemMagico == null){
+            return ResponseEntity.notFound().build();
+        }
+        Personagem atualizado = personagemService.incluirItemMagicoNoPersonagem(id, itemMagico);
         if (atualizado != null) {
             return ResponseEntity.ok(atualizado);
         } else {
@@ -66,7 +74,7 @@ public class PersonagemController {
 
     // Listar itens mágicos do personagem
     @GetMapping("/{id}/itens-magicos")
-    public ResponseEntity<List<ItemMagico>> listarItensDoPersonagem(@PathVariable long id) {
+    public ResponseEntity<List<ItemMagico>> listarItensDoPersonagem(@PathVariable Long id) {
         return personagemService.acharPersonagemPorId(id)
                 .map(p -> ResponseEntity.ok(p.getItemMagicoList()))
                 .orElse(ResponseEntity.notFound().build());
@@ -74,7 +82,7 @@ public class PersonagemController {
 
     // Remover item mágico do personagem
     @DeleteMapping("/{personagemId}/item-magico/{itemId}")
-    public ResponseEntity<Personagem> removerItem(@PathVariable long personagemId, @PathVariable long itemId) {
+    public ResponseEntity<Personagem> removerItem(@PathVariable Long personagemId, @PathVariable Long itemId) {
         Personagem atualizado = personagemService.removerItemMagicoDoPersonagem(personagemId, itemId);
         if (atualizado != null) {
             return ResponseEntity.ok(atualizado);
